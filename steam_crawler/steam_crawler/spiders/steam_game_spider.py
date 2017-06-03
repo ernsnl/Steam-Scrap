@@ -21,8 +21,8 @@ class SteamGameInfoSpider(scrapy.Spider):
 
   def parse(self, response):
     yield {
+      'url': response.url,
       'title': response.css('.apphub_AppName::text').extract_first(),
-      'app_id': response.url,
       'description': response.css('.game_description_snippet::text').extract_first(),
       'review_data': {
         'total_review_count' : response.css('meta[itemprop*=reviewCount]::attr(content)').extract_first(),
@@ -30,5 +30,5 @@ class SteamGameInfoSpider(scrapy.Spider):
       },
       'tags': [tag.strip() for tag in response.css('.popular_tags a::text').extract()],
       'genres': [genre.strip() for genre in response.css('.details_block a[href*=genre]::text').extract()],
-      'about': response.css('#game_area_description').extract_first()
+      'about': [each_about for each_about in response.css('.game_area_description::text').extract()]
     }
